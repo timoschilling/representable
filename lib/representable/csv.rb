@@ -35,8 +35,8 @@ module Representable
     # Returns a CSV string representing this object.
     def to_csv(*args)
       ::CSV.generate do |csv|
-        csv << to_hash(*args).keys
-        csv << to_hash(*args).values
+        csv << cols = representable_attrs.map(&:name)
+        csv << to_hash(*args).values_at(*cols)
       end
     end
   end
