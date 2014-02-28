@@ -147,6 +147,10 @@ private
       def build_config
         Config.new
       end
+
+      def clear_representable_attrs
+
+      end
     end # Declarations
   end
 
@@ -155,7 +159,9 @@ private
     def property(name, options={}, &block)
       return super unless block_given?
 
-      inline = inline_representer(representer_engine, name, options, &block)
+      #representer_engine =+ inheritable_modules (features)
+
+      inline = inline_representer(self, name, options, &block)
       inline.module_eval { include options[:extend] } if options[:extend]
 
       options[:extend] = inline
@@ -165,7 +171,15 @@ private
   private
     def inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
       Module.new do
-        include base_module
+        puts "including Representable"
+        include Representable # gives us representable_attrs
+
+        include base_module   # inherits representable_attrs
+        puts "finished including"
+        @representable_attrs = nil
+
+        puts "self is xml? #{self < Representable::XML}"
+
         instance_exec &block
       end
     end

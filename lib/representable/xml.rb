@@ -8,12 +8,19 @@ module Representable
       base.class_eval do
         include Representable
         extend ClassMethods
-        self.representation_wrap = true # let representable compute it.
       end
     end
 
 
     module ClassMethods
+      def build_config
+        # this would work fine if ::build_config would be inherited into the inline_representer, but it doesn't.
+        super.tap do |config|
+          config.wrap = true # that's like self.representation_wrap = true # let representable compute it.
+          puts "built config: #{config.inspect}, #{config.wrap.inspect}"
+        end
+      end
+
       def remove_namespaces!
         representable_attrs.options[:remove_namespaces] = true
       end
